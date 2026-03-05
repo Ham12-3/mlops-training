@@ -1,5 +1,7 @@
 # Verify pipeline reproducibility on every PR.
-# Runs: setup -> full pipeline -> repro --force -> assert metrics and model hash match.
+# CI does NOT use a DVC remote: .dvc/config is gitignored. The data stage
+# generates data from sklearn, so we run the full pipeline from scratch and
+# assert that two runs produce identical metrics and model hash.
 
 name: Reproducibility check
 
@@ -25,14 +27,8 @@ jobs:
           pip install -r requirements.txt
           pip install dvc
 
-      # Optional: if you use a DVC remote, add a step here to pull data.
-      # Example for local-style remote or S3:
-      # - name: Pull DVC data
-      #   run: dvc pull
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      # For this repo, the data stage generates data from sklearn, so no pull needed.
+      # No "dvc pull": no remote is configured in CI (config is gitignored).
+      # Pipeline runs from scratch; data stage creates data/raw.csv from sklearn.
 
       - name: Run reproducibility check
         run: make repro-check
