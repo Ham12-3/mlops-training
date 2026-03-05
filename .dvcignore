@@ -1,0 +1,7 @@
+# Ignore Python and env from DVC tracking
+__pycache__
+*.pyc
+.venv/
+venv/
+.git/
+.github/

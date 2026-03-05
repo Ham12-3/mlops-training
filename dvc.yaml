@@ -1,0 +1,58 @@
+# DVC pipeline: data -> preprocess -> train -> evaluate
+# Run with: dvc repro (or make repro)
+
+stages:
+  data:
+    cmd: python -m src.data
+    deps:
+      - src/data.py
+      - src/utils.py
+      - params.yaml
+    params:
+      - seed
+      - data
+    outs:
+      - data/raw.csv
+
+  preprocess:
+    cmd: python -m src.preprocess
+    deps:
+      - src/preprocess.py
+      - src/utils.py
+      - params.yaml
+      - data/raw.csv
+    params:
+      - seed
+      - preprocess
+    outs:
+      - data/train.csv
+      - data/test.csv
+
+  train:
+    cmd: python -m src.train
+    deps:
+      - src/train.py
+      - src/utils.py
+      - params.yaml
+      - data/train.csv
+    params:
+      - seed
+      - train
+    outs:
+      - models/model.joblib
+
+  evaluate:
+    cmd: python -m src.evaluate
+    deps:
+      - src/evaluate.py
+      - src/utils.py
+      - params.yaml
+      - models/model.joblib
+      - data/test.csv
+    params:
+      - evaluate
+    metrics:
+      - metrics.json:
+          cache: false
+    outs:
+      - artefacts/preds.csv

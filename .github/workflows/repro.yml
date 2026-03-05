@@ -1,0 +1,38 @@
+# Verify pipeline reproducibility on every PR.
+# Runs: setup -> full pipeline -> repro --force -> assert metrics and model hash match.
+
+name: Reproducibility check
+
+on:
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  repro-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install dvc
+
+      # Optional: if you use a DVC remote, add a step here to pull data.
+      # Example for local-style remote or S3:
+      # - name: Pull DVC data
+      #   run: dvc pull
+      #   env:
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # For this repo, the data stage generates data from sklearn, so no pull needed.
+
+      - name: Run reproducibility check
+        run: make repro-check

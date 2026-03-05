@@ -1,0 +1,133 @@
+schema: '2.0'
+stages:
+  data:
+    cmd: python -m src.data
+    deps:
+    - path: params.yaml
+      hash: md5
+      md5: d22533866391125f93253031f7d61a3b
+      size: 570
+    - path: src/data.py
+      hash: md5
+      md5: e2a3edf1317191cc155ba5677fee1748
+      size: 1069
+    - path: src/utils.py
+      hash: md5
+      md5: 38ba6197704eb18bf50d13734f3ce012
+      size: 1257
+    params:
+      params.yaml:
+        data:
+          dataset: breast_cancer
+          raw_path: data/raw.csv
+        seed: 42
+    outs:
+    - path: data/raw.csv
+      hash: md5
+      md5: 24d9881fad8cfb3d94f5276d372e422b
+      size: 121955
+  preprocess:
+    cmd: python -m src.preprocess
+    deps:
+    - path: data/raw.csv
+      hash: md5
+      md5: 24d9881fad8cfb3d94f5276d372e422b
+      size: 121955
+    - path: params.yaml
+      hash: md5
+      md5: d22533866391125f93253031f7d61a3b
+      size: 570
+    - path: src/preprocess.py
+      hash: md5
+      md5: f158f840acf5f6013b4d4291c0976977
+      size: 1222
+    - path: src/utils.py
+      hash: md5
+      md5: 38ba6197704eb18bf50d13734f3ce012
+      size: 1257
+    params:
+      params.yaml:
+        preprocess:
+          test_size: 0.2
+          output_train: data/train.csv
+          output_test: data/test.csv
+        seed: 42
+    outs:
+    - path: data/test.csv
+      hash: md5
+      md5: 8aca9110f9608ceb46200c13f13279e6
+      size: 24796
+    - path: data/train.csv
+      hash: md5
+      md5: 3233f115746657988b0ba9eaa5340f87
+      size: 97652
+  train:
+    cmd: python -m src.train
+    deps:
+    - path: data/train.csv
+      hash: md5
+      md5: 3233f115746657988b0ba9eaa5340f87
+      size: 97652
+    - path: params.yaml
+      hash: md5
+      md5: d22533866391125f93253031f7d61a3b
+      size: 570
+    - path: src/train.py
+      hash: md5
+      md5: db68a67bcbdeb6b13cf6f41e209c53dc
+      size: 1018
+    - path: src/utils.py
+      hash: md5
+      md5: 38ba6197704eb18bf50d13734f3ce012
+      size: 1257
+    params:
+      params.yaml:
+        seed: 42
+        train:
+          model_path: models/model.joblib
+          n_estimators: 100
+          max_depth: 5
+          min_samples_split: 2
+          min_samples_leaf: 1
+    outs:
+    - path: models/model.joblib
+      hash: md5
+      md5: 546872ea3713cf3a54d4c595010c114c
+      size: 272777
+  evaluate:
+    cmd: python -m src.evaluate
+    deps:
+    - path: data/test.csv
+      hash: md5
+      md5: 8aca9110f9608ceb46200c13f13279e6
+      size: 24796
+    - path: models/model.joblib
+      hash: md5
+      md5: 546872ea3713cf3a54d4c595010c114c
+      size: 272777
+    - path: params.yaml
+      hash: md5
+      md5: d22533866391125f93253031f7d61a3b
+      size: 570
+    - path: src/evaluate.py
+      hash: md5
+      md5: 1fc8464bc831c2437141ce1b7cbdf8db
+      size: 1447
+    - path: src/utils.py
+      hash: md5
+      md5: 38ba6197704eb18bf50d13734f3ce012
+      size: 1257
+    params:
+      params.yaml:
+        evaluate:
+          metrics_path: metrics.json
+          preds_path: artefacts/preds.csv
+    outs:
+    - path: artefacts/preds.csv
+      hash: md5
+      md5: 26deb71865d82c1c01247519369e19cd
+      size: 585
+    - path: metrics.json
+      hash: md5
+      md5: ad25f224fc45d2e822553ffe1e1fb72c
+      size: 134

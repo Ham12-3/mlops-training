@@ -1,0 +1,25 @@
+# Single source of truth for all tunables and paths.
+# Used by DVC pipeline stages and scripts.
+
+seed: 42
+
+data:
+  dataset: breast_cancer  # sklearn.datasets: breast_cancer | iris
+  raw_path: data/raw.csv
+
+preprocess:
+  test_size: 0.2
+  output_train: data/train.csv
+  output_test: data/test.csv
+
+train:
+  model_path: models/model.joblib
+  # Scikit-learn RandomForestClassifier params (deterministic with fixed seed)
+  n_estimators: 100
+  max_depth: 5
+  min_samples_split: 2
+  min_samples_leaf: 1
+
+evaluate:
+  metrics_path: metrics.json
+  preds_path: artefacts/preds.csv
